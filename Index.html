@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Country by Flag</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        #flag { width: 300px; height: 200px; margin: 20px auto; display: block; }
+        .btn { display: block; margin: 10px auto; padding: 10px; width: 200px; }
+        #hint { font-style: italic; color: gray; display: none; }
+    </style>
+</head>
+<body>
+    <h1>Guess the Country by Flag</h1>
+    <img id="flag" src="" alt="Flag">
+    <div id="options"></div>
+    <p id="hint"></p>
+    <p>Score: <span id="score">0</span></p>
+    
+    <script>
+        const flags = [
+            { country: "France", src: "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg", options: ["France", "Germany", "Italy", "Spain"] },
+            { country: "Japan", src: "https://upload.wikimedia.org/wikipedia/en/9/9e/Flag_of_Japan.svg", options: ["China", "South Korea", "Japan", "Thailand"] },
+            { country: "Brazil", src: "https://upload.wikimedia.org/wikipedia/en/0/05/Flag_of_Brazil.svg", options: ["Argentina", "Brazil", "Mexico", "Colombia"] }
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+        let wrongGuesses = 0;
+        const flagImg = document.getElementById("flag");
+        const optionsDiv = document.getElementById("options");
+        const scoreDisplay = document.getElementById("score");
+        const hint = document.getElementById("hint");
+
+        function loadFlag() {
+            const flagData = flags[currentIndex];
+            flagImg.src = flagData.src;
+            optionsDiv.innerHTML = "";
+            flagData.options.forEach(option => {
+                const button = document.createElement("button");
+                button.innerText = option;
+                button.className = "btn";
+                button.onclick = () => checkAnswer(option, flagData.country);
+                optionsDiv.appendChild(button);
+            });
+            hint.style.display = "none";
+        }
+
+        function checkAnswer(selected, correct) {
+            if (selected === correct) {
+                alert("Correct!");
+                score++;
+                wrongGuesses = 0;
+                nextFlag();
+            } else {
+                wrongGuesses++;
+                if (wrongGuesses === 2) {
+                    hint.innerText = "Hint: The country starts with " + correct[0];
+                    hint.style.display = "block";
+                }
+                if (wrongGuesses === 3) {
+                    alert("Wrong again! You lose a point.");
+                    score = Math.max(0, score - 1);
+                }
+            }
+            scoreDisplay.innerText = score;
+        }
+
+        function nextFlag() {
+            currentIndex = (currentIndex + 1) % flags.length;
+            loadFlag();
+        }
+
+        loadFlag();
+    </script>
+</body>
+</html>
